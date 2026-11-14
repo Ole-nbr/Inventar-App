@@ -77,7 +77,8 @@ Jede Schicht ruft nur die direkt darunter liegende auf.
 
 - Feature-basierte Ordner: `src/features/<feature>/{components,hooks,pages}`.
 - Serverdaten nur über TanStack-Query-Hooks laden, kein `fetch` in Komponenten.
-- API-Typen werden generiert (`src/api/types.ts`), nicht von Hand geschrieben.
+- API-Typen werden generiert (`src/api/types.ts`), nicht von Hand geschrieben. Die Datei wird
+  als Ausnahme committet (siehe `docs/adr/0002-commit-generated-api-types.md`).
 - `src/components/ui/` enthält nur generische Komponenten ohne Fachlogik.
 - Kein `any` in TypeScript.
 
@@ -176,7 +177,7 @@ nicht der Hauptentwickler. Standardmäßig gilt:
 - Nicht selbst committen oder pushen, solange wir es nicht ausdrücklich sagen.
 
 ### Immer
-- Keine Secrets, `.env`-Dateien oder generierten Dateien committen.
+- Keine Secrets, `.env`-Dateien oder generierten Dateien committen (Ausnahme: `frontend/src/api/types.ts`, ADR 0002).
 - Bei Architekturentscheidungen einen ADR-Entwurf in `docs/adr/` vorschlagen.
 
 ## Nicht tun
