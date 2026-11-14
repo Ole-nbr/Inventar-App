@@ -5,7 +5,8 @@ Eine Web-App zur Verwaltung von Inventar.
 ## Lokale Entwicklung
 
 Voraussetzungen: [Docker](https://docs.docker.com/get-docker/), [uv](https://docs.astral.sh/uv/)
-und [Node.js](https://nodejs.org/) 24.
+und [Node.js](https://nodejs.org/) 24. Für die Kurzbefehle außerdem GNU Make
+(Windows: `winget install ezwinports.make`, danach neues Terminal öffnen).
 
 Umgebungsvariablen anlegen (im Root) und bei Bedarf anpassen:
 
@@ -13,17 +14,27 @@ Umgebungsvariablen anlegen (im Root) und bei Bedarf anpassen:
 cp .env.example .env
 ```
 
+### Kurzbefehle
+
+| Befehl         | Was passiert |
+|----------------|--------------|
+| `make dev`     | Startet alles mit Docker Compose (siehe unten) |
+| `make rebuild` | Wie `make dev`, erneuert zusätzlich die Pakete in den Containern |
+| `make test`    | Startet die Datenbank und führt Backend- und Frontend-Tests aus |
+| `make lint`    | Prüft wie die CI: Ruff, mypy, ESLint, Prettier, tsc |
+| `make format`  | Formatiert Backend und Frontend (Ruff, Prettier) |
+
 ### Alles mit Docker Compose
 
 ```bash
-docker compose up --build
+make dev    # oder: docker compose up --build
 ```
 
 Startet Datenbank, Backend (<http://localhost:8000>) und Frontend (<http://localhost:5173>) mit
 Hot Reload. Das Backend führt beim Start `alembic upgrade head` aus.
 
 Nach Änderungen an `package.json` oder `pyproject.toml` die Images neu bauen und die
-Container-eigenen Pakete erneuern: `docker compose up --build --renew-anon-volumes`.
+Container-eigenen Pakete erneuern: `make rebuild`.
 
 ### Einzeln ohne Docker (außer der Datenbank)
 
