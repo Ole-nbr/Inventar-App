@@ -4,7 +4,8 @@ Eine Web-App zur Verwaltung von Inventar.
 
 ## Lokale Entwicklung
 
-Voraussetzungen: [Docker](https://docs.docker.com/get-docker/) und [uv](https://docs.astral.sh/uv/).
+Voraussetzungen: [Docker](https://docs.docker.com/get-docker/), [uv](https://docs.astral.sh/uv/)
+und [Node.js](https://nodejs.org/) 24.
 
 1. Umgebungsvariablen anlegen (im Root) und bei Bedarf anpassen:
 
@@ -29,7 +30,22 @@ Voraussetzungen: [Docker](https://docs.docker.com/get-docker/) und [uv](https://
 
    Healthcheck: <http://localhost:8000/api/v1/health>, mit Datenbank: <http://localhost:8000/api/v1/health/db>
 
+4. Frontend starten (in `frontend/`, Backend sollte laufen):
+
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+   App: <http://localhost:5173>. Der Vite-Dev-Server leitet `/api` an das Backend auf Port 8000
+   weiter, deshalb gibt es keine CORS-Probleme.
+
 ### Tests
+
+Frontend (in `frontend/`): `npm test` startet Vitest im Watch-Modus, `npm run lint`,
+`npm run format:check` und `npm run typecheck` prüfen Stil und Typen.
+
+Backend:
 
 Die Integrationstests laufen gegen eine eigene Datenbank `inventar_test`, damit eure
 Entwicklungsdaten unberührt bleiben. Einmalig anlegen:
@@ -49,6 +65,16 @@ Schemaänderungen laufen über Alembic (in `backend/`):
 uv run alembic revision --autogenerate -m "add items table"   # Entwurf erzeugen, immer prüfen
 uv run alembic upgrade head                                     # anwenden
 uv run alembic downgrade -1                                     # letzte Revision zurücknehmen
+```
+
+### API-Typen
+
+Die TypeScript-Typen in `frontend/src/api/types.ts` werden aus der OpenAPI-Spec des Backends
+erzeugt, nie von Hand bearbeitet. Nach Änderungen an Endpunkten oder Schemas bei laufendem
+Backend (in `frontend/`) ausführen und die Datei im selben PR committen:
+
+```bash
+npm run generate:api
 ```
 
 Datenbank stoppen mit `docker compose down` (Daten bleiben erhalten).
