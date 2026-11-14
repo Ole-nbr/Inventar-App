@@ -18,5 +18,33 @@ services:
       timeout: 5s
       retries: 10
 
+  backend:
+    build: ./backend
+    env_file: .env
+    environment:
+      # Inside compose the database is reached by its service name, not 127.0.0.1.
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    environment:
+      API_PROXY_TARGET: http://backend:8000
+      VITE_USE_POLLING: "true"
+    ports:
+      - "127.0.0.1:5173:5173"
+    volumes:
+      - ./frontend:/app
+      # Anonymous volume hides the host's node_modules (Windows binaries) from the container.
+      - /app/node_modules
+    depends_on:
+      - backend
+
 volumes:
   postgres_data:
