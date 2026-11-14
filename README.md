@@ -7,20 +7,37 @@ Eine Web-App zur Verwaltung von Inventar.
 Voraussetzungen: [Docker](https://docs.docker.com/get-docker/), [uv](https://docs.astral.sh/uv/)
 und [Node.js](https://nodejs.org/) 24.
 
-1. Umgebungsvariablen anlegen (im Root) und bei Bedarf anpassen:
+Umgebungsvariablen anlegen (im Root) und bei Bedarf anpassen:
 
-   ```bash
-   cp .env.example .env
-   ```
+```bash
+cp .env.example .env
+```
 
-2. Datenbank starten und prüfen, ob sie `healthy` ist:
+### Alles mit Docker Compose
+
+```bash
+docker compose up --build
+```
+
+Startet Datenbank, Backend (<http://localhost:8000>) und Frontend (<http://localhost:5173>) mit
+Hot Reload. Das Backend führt beim Start `alembic upgrade head` aus.
+
+Nach Änderungen an `package.json` oder `pyproject.toml` die Images neu bauen und die
+Container-eigenen Pakete erneuern: `docker compose up --build --renew-anon-volumes`.
+
+### Einzeln ohne Docker (außer der Datenbank)
+
+Praktisch zum Debuggen. Dafür müssen die Compose-Dienste `backend` und `frontend` gestoppt
+sein, weil sie dieselben Ports belegen (`docker compose stop backend frontend`).
+
+1. Datenbank starten und prüfen, ob sie `healthy` ist:
 
    ```bash
    docker compose up -d db
    docker compose ps
    ```
 
-3. Backend starten (in `backend/`):
+2. Backend starten (in `backend/`):
 
    ```bash
    uv sync
@@ -30,7 +47,7 @@ und [Node.js](https://nodejs.org/) 24.
 
    Healthcheck: <http://localhost:8000/api/v1/health>, mit Datenbank: <http://localhost:8000/api/v1/health/db>
 
-4. Frontend starten (in `frontend/`, Backend sollte laufen):
+3. Frontend starten (in `frontend/`, Backend sollte laufen):
 
    ```bash
    npm install
