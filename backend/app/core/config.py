@@ -2,6 +2,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Resolve .env relative to this file, so it is found regardless of the working directory.
@@ -16,6 +17,8 @@ class Settings(BaseSettings):
     app_name: str = "Inventar-App"
     environment: Literal["development", "production"] = "development"
     debug: bool = False
+    # Required on purpose: a wrong default connection is worse than failing at startup.
+    database_url: SecretStr
 
 
 @lru_cache
