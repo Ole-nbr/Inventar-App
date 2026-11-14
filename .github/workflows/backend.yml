@@ -13,6 +13,23 @@ permissions:
 jobs:
   backend:
     runs-on: ubuntu-latest
+    services:
+      # Same major version as docker-compose.yml, so integration tests match local development.
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: inventar
+          POSTGRES_PASSWORD: inventar
+          POSTGRES_DB: inventar_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U inventar -d inventar_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgresql+psycopg://inventar:inventar@127.0.0.1:5432/inventar_test
     defaults:
       run:
         working-directory: backend

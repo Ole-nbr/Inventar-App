@@ -3,8 +3,11 @@ name = "backend"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
+    "alembic>=1.20.1",
     "fastapi[standard]>=0.162.1",
+    "psycopg[binary]>=3.3.9",
     "pydantic-settings>=2.16.2",
+    "sqlalchemy>=2.1.8",
 ]
 
 [dependency-groups]
@@ -21,9 +24,15 @@ line-length = 100
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
 
+[tool.ruff.lint.isort]
+# Our alembic/ folder would otherwise make ruff treat the library as first-party.
+known-third-party = ["alembic"]
+
 [tool.mypy]
 strict = true
 plugins = ["pydantic.mypy"]
+# Name modules by path (tests.conftest, tests.integration.conftest) instead of by file name.
+explicit_package_bases = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
