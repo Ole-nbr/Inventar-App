@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Exported by npm run generate:api, only an intermediate step for src/api/types.ts
+openapi.json
