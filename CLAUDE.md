@@ -47,7 +47,7 @@ make lint           # Ruff, mypy, ESLint, tsc
 # Backend (in backend/)
 uv run pytest
 uv run ruff check . && uv run ruff format .
-uv run mypy app
+uv run mypy app tests
 uv run alembic revision --autogenerate -m "<beschreibung>"
 uv run alembic upgrade head
 
