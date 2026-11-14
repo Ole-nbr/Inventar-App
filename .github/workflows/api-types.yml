@@ -1,0 +1,55 @@
+name: API Types CI
+
+# Fails if frontend/src/api/types.ts no longer matches the backend's OpenAPI spec (ADR 0002).
+# No path filter: the job must always report a status, otherwise a required
+# check in the ruleset would block PRs that do not touch the API.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  api-types:
+    runs-on: ubuntu-latest
+    env:
+      # Importing the app needs a URL, but exporting the spec never connects to the database.
+      DATABASE_URL: postgresql+psycopg://unused:unused@127.0.0.1:5432/unused
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Install backend dependencies
+        run: uv sync --locked
+        working-directory: backend
+
+      - name: Set up Node
+        uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Generate API types
+        run: npm run generate:api
+
+      - name: Check for drift
+        run: |
+          git diff --exit-code src/api/types.ts || {
+            echo "::error::src/api/types.ts is outdated. Run 'npm run generate:api' in frontend/ and commit the result."
+            exit 1
+          }
