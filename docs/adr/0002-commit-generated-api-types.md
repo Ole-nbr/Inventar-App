@@ -16,12 +16,13 @@ without a running backend, neither locally nor in CI.
 ## Decision
 
 `frontend/src/api/types.ts` is committed, as a deliberate exception to the rule.
-Whoever changes an endpoint or schema in the backend runs `npm run generate:api` against the
-running backend and commits the updated file in the same PR.
+Whoever changes an endpoint or schema in the backend runs `npm run generate:api` and commits
+the updated file in the same PR. The script exports the spec with `backend/scripts/export_openapi.py`,
+so no running backend is needed.
 
 ## Consequences
 
 - The frontend builds and type checks on its own; the frontend workflow needs no backend.
-- The file can drift from the backend if someone forgets to regenerate it. A CI check that
-  exports the spec from the backend and compares the generated output can close that gap later.
+- The file could drift from the backend if someone forgets to regenerate it. The
+  `api-types.yml` workflow regenerates it and fails if it differs from the committed file (#20).
 - The file is never edited by hand; changes always come from the generator.
